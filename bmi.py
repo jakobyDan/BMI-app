@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from bmi_ui import Ui_MainWindow
-import bmi_c
+from bmi_c import BMI  # import třídy BMI
 
 class BMIApp(QMainWindow):
     def __init__(self):
@@ -13,15 +13,12 @@ class BMIApp(QMainWindow):
         file_menu = self.ui.menubar.addMenu("File")
         help_menu = self.ui.menubar.addMenu("Help")
 
-        # File -> End
         end_action = file_menu.addAction("End")
         end_action.triggered.connect(self.close)
 
-        # Help -> Documentation
         doc_action = help_menu.addAction("Documentation")
         doc_action.triggered.connect(lambda: QMessageBox.information(self, "Documentation", "Tady může být dokumentace."))
 
-        # Help -> About
         about_action = help_menu.addAction("About")
         about_action.triggered.connect(lambda: QMessageBox.information(self, "About", "BMI Kalkulačka v PySide6"))
 
@@ -31,9 +28,11 @@ class BMIApp(QMainWindow):
     def calculate_bmi(self):
         try:
             weight = float(self.ui.input_weight.text())
-            height = float(self.ui.input_height.text())
-            bmi_value = bmi_c.bmi(weight, height)
-            category = bmi_c.category(bmi_value)
+            height_cm = float(self.ui.input_height.text())
+            height_m = height_cm / 100  # převod na metry
+            bmi_obj = BMI(weight, height_m)  # vytvoření instance třídy
+            bmi_value = bmi_obj.vypocti()
+            category = bmi_obj.get_kategorie()
             self.ui.label_result.setText(f"BMI: {bmi_value:.2f}, Kategorie: {category}")
             self.statusBar().showMessage("Výpočet dokončen")
         except ValueError:
