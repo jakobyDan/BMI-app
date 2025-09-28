@@ -1,0 +1,19 @@
+# 🧮 BMI Kalkulačka
+
+Aplikace vytvořená v Pythonu s využitím **PySide6 (Qt)**.
+Slouží k výpočtu **Body Mass Indexu (BMI)** na základě zadané hmotnosti a výšky.
+
+---
+
+## 🚀 Spuštění aplikace
+
+1. Naklonuj nebo stáhni repozitář.
+2. Aktivuj virtuální prostředí (pokud používáš):
+   ```bash
+   source .venv/bin/activate
+3. Nainstaluj dulezite veci
+
+    pip install -r requirements.txt
+4. Spust aplikaci
+
+    python bmi.py
