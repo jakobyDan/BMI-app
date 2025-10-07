@@ -1,20 +1,29 @@
-import sys
+import sys, os
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel
 from PySide6.QtGui import QAction, QPixmap
 from bmi_ui import Ui_MainWindow
 from bmi_c import BMI
 
 
+def resource_path(relative_path):
+    """
+    Najde cestu k souborům i po zabalení do .exe (PyInstaller)
+    """
+    try:
+        base_path = sys._MEIPASS  # dočasná složka PyInstalleru
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+
 class BMIMainWindow(QMainWindow, Ui_MainWindow):
-    """
-    Hlavní třída aplikace, která propojuje GUI a backend.
-    """
+    """Hlavní třída aplikace, která propojuje GUI a backend."""
 
     def __init__(self):
         super().__init__()
         self.setupUi(self)
 
-        # Přidáme label pro obrázek
+        # Label pro obrázek
         self.label_image = QLabel(self.centralwidget)
         self.label_image.setGeometry(20, 200, 150, 80)
         self.label_image.setScaledContents(True)
@@ -22,32 +31,27 @@ class BMIMainWindow(QMainWindow, Ui_MainWindow):
         # Propojení tlačítka
         self.button_calc.clicked.connect(self.calculate_bmi)
 
-        # Připravíme menu
+        # Menu
         self.create_menu()
 
     def create_menu(self):
         """Vytvoření menu bar položek."""
-        # File -> End
         file_menu = self.menubar.addMenu("File")
         end_action = QAction("End", self)
         end_action.triggered.connect(self.close)
         file_menu.addAction(end_action)
 
-        # Help -> Documentation
         help_menu = self.menubar.addMenu("Help")
         doc_action = QAction("Documentation", self)
         doc_action.triggered.connect(self.show_doc)
         help_menu.addAction(doc_action)
 
-        # Help -> About
         about_action = QAction("About", self)
         about_action.triggered.connect(self.show_about)
         help_menu.addAction(about_action)
 
     def calculate_bmi(self):
-        """
-        Zpracuje vstupy z GUI, spočítá BMI a zobrazí výsledek + obrázek.
-        """
+        """Zpracuje vstupy z GUI, spočítá BMI a zobrazí výsledek + obrázek."""
         try:
             weight = float(self.input_weight.text())
             height = float(self.input_height.text()) / 100  # cm → m
@@ -59,7 +63,6 @@ class BMIMainWindow(QMainWindow, Ui_MainWindow):
             self.label_result.setText(f"BMI: {bmi_value:.2f} – {category}")
             self.statusbar.showMessage("Výpočet dokončen", 3000)
 
-            # Obrázek podle kategorie
             self.show_image(category)
 
         except ValueError:
@@ -67,21 +70,18 @@ class BMIMainWindow(QMainWindow, Ui_MainWindow):
             self.statusbar.showMessage("Chyba vstupu", 3000)
 
     def show_image(self, category):
-        """
-        Zobrazí obrázek podle výsledné kategorie BMI.
-        Obrázky musí být v podsložce `images/`.
-        """
+        """Zobrazí obrázek podle výsledné kategorie BMI."""
         img_path = None
         if "podvýživa" in category:
-            img_path = "images/underweight.png"
+            img_path = resource_path("images/underweight.png")
         elif "ideální" in category:
-            img_path = "images/normal.png"
+            img_path = resource_path("images/normal.png")
         elif "nadváha" in category:
-            img_path = "images/overweight.png"
+            img_path = resource_path("images/overweight.png")
         elif "obezita" in category:
-            img_path = "images/obese.png"
+            img_path = resource_path("images/obese.png")
 
-        if img_path:
+        if img_path and os.path.exists(img_path):
             self.label_image.setPixmap(QPixmap(img_path))
         else:
             self.label_image.clear()

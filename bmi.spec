@@ -5,7 +5,7 @@ a = Analysis(
     ['bmi.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('images', 'images')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
